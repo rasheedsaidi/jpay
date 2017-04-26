@@ -113,6 +113,10 @@ class Utility extends Model
     	$data['Token'] =$token;
     	self::sendEmail('confirmEmail', $email, $subject, $data);
     }
+
+    static function baseURL() {
+        return Yii::$app->request->baseUrl .'/';
+    }
 }
 
 ?>

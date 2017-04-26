@@ -5,6 +5,7 @@ use yii\helpers\Html;
 use yii\widgets\Pjax;
 //use yii\bootstrap\ActiveForm;
 use yii\widgets\ActiveForm;
+use app\models\Utility;
 
 $this->title = 'My Yii Application';
 ?>
@@ -16,6 +17,7 @@ $this->title = 'My Yii Application';
             <div class="col-lg-6 col-md-offset-3">
             <div class="well user-form">
                 <h4>Hello, please enter your email address below:</h4>
+                <div class="loading"><img src="<?php echo Utility::baseURL(); ?>web/images/animated_progress.gif"/></div>
 <?php 
 Pjax::begin([
     // Pjax options

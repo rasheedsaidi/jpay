@@ -83,12 +83,43 @@ class SiteController extends Controller
             $subject = 'Comfirm your email';
             $data['subject'] = $subject;
             Utility::confirmEmail($model->Email, $subject, $data);
+            $model->Status = 0;
             $model->save(false);
             //return $this->goBack();
             $response = "Success!";
         }
 
         return $this->render('index', compact('model', 'response'));
+    }
+
+    public function actionConfirm()
+    {
+        $token = (isset($_REQUEST) && isset($_REQUEST['token']))? $_REQUEST['token']: [];
+        $user = User::find()->where(['Token' => $token]);
+        $response = '';
+        if ($user) {
+            Utility::startSession();
+            $_SESSION['FirstName'] = $user['FirstName'];
+            $_SESSION['Token'] = $user['Token'];
+            $user->Status = 1;
+            $user->save(false);
+            return $this->redirect('register');
+        }
+
+        return $this->render('confirm', compact('user'));
+    }
+
+    public function actionRegister()
+    {
+        Utility::startSession();
+        $token = (isset($_SESSION) && isset($_SESSION['token']))? $_SESSION['token']: [];
+        $user = User::find()->where(['Token' => $token]);
+        $response = '';
+        if (!$user) {
+            return $this->redirect('register');
+        }
+
+        return $this->render('confirm', compact('user'));
     }
 
     /**
