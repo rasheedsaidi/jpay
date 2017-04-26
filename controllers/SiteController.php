@@ -7,7 +7,8 @@ use yii\filters\AccessControl;
 use yii\web\Controller;
 use yii\filters\VerbFilter;
 use app\models\LoginForm;
-use app\models\ContactForm;
+use app\models\Utility;
+use app\models\User;
 
 class SiteController extends Controller
 {
@@ -37,6 +38,18 @@ class SiteController extends Controller
         ];
     }
 
+    public function beforeAction1($action)
+    {
+        Utility::startSession();
+        $return_url = Url::toRoute(['/jpay/' . $action->id], true);
+        if(!Utility::checkLogin($return_url, 'You must be logged-in to view the requested page. Please login or sign up.')) {
+            return $this->redirect(['user/login']);
+            //echo 'got here';exit;
+        }
+    
+        return parent::beforeAction($action);
+    }
+
     /**
      * @inheritdoc
      */
@@ -60,7 +73,22 @@ class SiteController extends Controller
      */
     public function actionIndex()
     {
-        return $this->render('index');
+        $model = new User();
+        $response = '';
+        if ($model->load(Yii::$app->request->post())) {            
+            $date = date('Y-m-d H:i:s');
+            $data = array();
+            $data['FirstName'] = $model->FirstName;
+            $data['Email'] = $model->Email;
+            $subject = 'Comfirm your email';
+            $data['subject'] = $subject;
+            Utility::confirmEmail($model->Email, $subject, $data);
+            $model->save(false);
+            //return $this->goBack();
+            $response = "Success!";
+        }
+
+        return $this->render('index', compact('model', 'response'));
     }
 
     /**

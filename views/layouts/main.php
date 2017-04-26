@@ -30,7 +30,7 @@ AppAsset::register($this);
         'brandLabel' => 'My Company',
         'brandUrl' => Yii::$app->homeUrl,
         'options' => [
-            'class' => 'navbar-inverse navbar-fixed-top',
+            'class' => 'navbar-inverse navbar-fixed-top1',
         ],
     ]);
     echo Nav::widget([
@@ -65,10 +65,8 @@ AppAsset::register($this);
 </div>
 
 <footer class="footer">
-    <div class="container">
-        <p class="pull-left">&copy; My Company <?= date('Y') ?></p>
-
-        <p class="pull-right"><?= Yii::powered() ?></p>
+    <div class="container" style="margin-top: 3em;">
+        <p class="text-center"><?= Yii::powered() ?></p>
     </div>
 </footer>
 

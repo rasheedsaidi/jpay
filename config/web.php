@@ -26,7 +26,21 @@ $config = [
             // send all mails to a file by default. You have to set
             // 'useFileTransport' to false and configure a transport
             // for the mailer to send real emails.
-            'useFileTransport' => true,
+            'useFileTransport' => false,
+            'transport' => [
+                'class' => 'Swift_SmtpTransport',
+                'host' => 'n1plcpnl0073.prod.ams1.secureserver.net',
+                'username' => 'reg@einsurance.nigerinsurance.com',
+                'password' => 'G]*@*_owb=-Z',
+                'port' => '465', //'465',
+                'encryption' => 'ssl',
+                //'port' => '587',
+                //'encryption' => 'tls',
+            ],
+            'messageConfig' => [
+                'from' => ['reg@jpay.com' => 'JPay'], // this is needed for sending emails
+                'charset' => 'UTF-8',
+            ]
         ],
         'log' => [
             'traceLevel' => YII_DEBUG ? 3 : 0,
