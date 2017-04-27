@@ -15,7 +15,7 @@ $this->title = 'My Yii Application';
 
         <div class="row">
             <div class="col-lg-6 col-md-offset-3">
-            <div class="well user-form">
+            <div class="well user-form"style="float: left;width: 100%;">
                 <h4>Hello, please enter your email address below:</h4>
                 <div class="loading"><img src="<?php echo Utility::baseURL(); ?>web/images/animated_progress.gif"/></div>
 <?php 

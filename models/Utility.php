@@ -109,9 +109,11 @@ class Utility extends Model
     }
 
     public static function confirmEmail($email, $subject, $data) {
-    	$token = \Yii::$app->security->generateRandomString();
-    	$data['Token'] =$token;
     	self::sendEmail('confirmEmail', $email, $subject, $data);
+    }
+
+    public static function confirmRegistration($email, $subject, $data) {
+    	self::sendEmail('confirmRegister', $email, $subject, $data);
     }
 
     static function baseURL() {

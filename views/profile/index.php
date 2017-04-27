@@ -16,7 +16,7 @@ $this->params['breadcrumbs'][] = $this->title;
     <?php // echo $this->render('_search', ['model' => $searchModel]); ?>
 
     <p>
-        <?= Html::a('Create Profile', ['create'], ['class' => 'btn btn-success']) ?>
+        <?php//= Html::a('Create Profile', ['create'], ['class' => 'btn btn-success']) ?>
     </p>
 <?php Pjax::begin(); ?>    <?= GridView::widget([
         'dataProvider' => $dataProvider,
@@ -28,7 +28,7 @@ $this->params['breadcrumbs'][] = $this->title;
             'UserID',
             'FirstName',
             'LastName',
-            'MiddleName',
+            //'MiddleName',
             // 'Gender',
             // 'Address:ntext',
             // 'State',

@@ -8,6 +8,8 @@ use app\models\ProfileSearch;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
+use app\models\User;
+use app\models\LoginForm;
 
 /**
  * ProfileController implements the CRUD actions for Profile model.
@@ -29,12 +31,24 @@ class ProfileController extends Controller
         ];
     }
 
+    public function beforeAction1($action)
+    {
+        if (Yii::$app->user->isGuest) {
+            return $this->redirect('login');
+        }
+    
+        return parent::beforeAction($action);
+    }
+
     /**
      * Lists all Profile models.
      * @return mixed
      */
     public function actionIndex()
     {
+        if (Yii::$app->user->isGuest) {
+            return $this->redirect('login');
+        }
         $searchModel = new ProfileSearch();
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
 
@@ -44,13 +58,51 @@ class ProfileController extends Controller
         ]);
     }
 
+    public function actionLogin()
+    {
+        if (!Yii::$app->user->isGuest) {
+            return $this->redirect('index');
+        }
+
+        $model = new LoginForm();
+        if ($model->load(Yii::$app->request->post()) && $model->login()) {
+            return $this->redirect('index');
+        }
+        return $this->render('login', [
+            'model' => $model,
+        ]);
+    }
+
+    public function actionLogin1()
+    {
+        if (!Yii::$app->user->isGuest) {
+            return $this->goHome();
+        }
+
+        $model = '';
+        if ($_POST && $_POST['login']) {
+
+            $c = User::findOne(['Email' => $_POST['Email']])->count();
+            if($c > 0) {
+                Utility::startSession();
+                $_SESSION['loggedIn'] = 1;
+            }
+        }
+        return $this->render('login', [
+            'model' => $model,
+        ]);
+    }
+
     /**
      * Displays a single Profile model.
      * @param integer $id
      * @return mixed
      */
-    public function actionView($id)
+    public function actionView($id)    
     {
+        if (Yii::$app->user->isGuest) {
+            return $this->redirect('login');
+        }
         return $this->render('view', [
             'model' => $this->findModel($id),
         ]);
@@ -63,6 +115,9 @@ class ProfileController extends Controller
      */
     public function actionCreate()
     {
+        if (Yii::$app->user->isGuest) {
+            return $this->redirect('login');
+        }
         $model = new Profile();
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
@@ -82,6 +137,9 @@ class ProfileController extends Controller
      */
     public function actionUpdate($id)
     {
+        if (Yii::$app->user->isGuest) {
+            return $this->redirect('login');
+        }
         $model = $this->findModel($id);
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
@@ -101,6 +159,9 @@ class ProfileController extends Controller
      */
     public function actionDelete($id)
     {
+        if (Yii::$app->user->isGuest) {
+            return $this->redirect('login');
+        }
         $this->findModel($id)->delete();
 
         return $this->redirect(['index']);

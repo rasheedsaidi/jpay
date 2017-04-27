@@ -9,6 +9,7 @@ use yii\filters\VerbFilter;
 use app\models\LoginForm;
 use app\models\Utility;
 use app\models\User;
+use app\models\Profile;
 
 class SiteController extends Controller
 {
@@ -75,18 +76,27 @@ class SiteController extends Controller
     {
         $model = new User();
         $response = '';
-        if ($model->load(Yii::$app->request->post())) {            
-            $date = date('Y-m-d H:i:s');
-            $data = array();
-            $data['FirstName'] = $model->FirstName;
-            $data['Email'] = $model->Email;
-            $subject = 'Comfirm your email';
-            $data['subject'] = $subject;
-            Utility::confirmEmail($model->Email, $subject, $data);
-            $model->Status = 0;
-            $model->save(false);
-            //return $this->goBack();
-            $response = "Success!";
+        if ($model->load(Yii::$app->request->post()) && $model->validate()) {
+            $u = User::find()->where(['Email' => $model->Email])->count();
+            if($u > 0)  {
+                $response = 'used';
+                return false;
+            } else {
+                $date = date('Y-m-d H:i:s');
+                $token = \Yii::$app->security->generateRandomString();
+                $data = array();
+                $data['FirstName'] = $model->FirstName;
+                $data['Email'] = $model->Email;
+                $subject = 'Comfirm your email';
+                $data['subject'] = $subject;
+                $data['Token'] = $token;
+                Utility::confirmEmail($model->Email, $subject, $data);
+                $model->Status = 0;
+                $model->CreatedAt = $date;
+                $model->save(false);
+                //return $this->goBack();
+                $response = "Success!";
+            }
         }
 
         return $this->render('index', compact('model', 'response'));
@@ -94,13 +104,16 @@ class SiteController extends Controller
 
     public function actionConfirm()
     {
-        $token = (isset($_REQUEST) && isset($_REQUEST['token']))? $_REQUEST['token']: [];
-        $user = User::find()->where(['Token' => $token]);
-        $response = '';
+        $token = (isset($_REQUEST) && isset($_REQUEST['token']))? $_REQUEST['token']: '';
+        $user = User::find()->where(['Token' => $token])->one();
+        $response = ''; //var_dump(intval($user->Status) === 2);exit;
         if ($user) {
+            if(intval($user->Status) === 2) {
+                return $this->redirect('index');
+            }
             Utility::startSession();
-            $_SESSION['FirstName'] = $user['FirstName'];
-            $_SESSION['Token'] = $user['Token'];
+            $_SESSION['FirstName'] = $user->FirstName;
+            $_SESSION['Token'] = $user->Token;
             $user->Status = 1;
             $user->save(false);
             return $this->redirect('register');
@@ -111,15 +124,37 @@ class SiteController extends Controller
 
     public function actionRegister()
     {
-        Utility::startSession();
-        $token = (isset($_SESSION) && isset($_SESSION['token']))? $_SESSION['token']: [];
-        $user = User::find()->where(['Token' => $token]);
+        Utility::startSession(); //var_dump($_POST);exit;
+        $token = (isset($_SESSION) && isset($_SESSION['Token']))? $_SESSION['Token']: '';        
         $response = '';
-        if (!$user) {
-            return $this->redirect('register');
+        if (!$token) {
+            return $this->redirect('index');
+        }
+        $user = User::find()->where(['Token' => $token])->one();
+        if($user && $user->Status == 2) {
+            throw new \yii\web\ForbiddenHttpException('A user with email ' . $user->Email .' has already registered');
+        }
+        $model = new Profile();
+
+        if ($user && $model->load(Yii::$app->request->post())) {            
+            $date = date('Y-m-d H:i:s');
+            $token = \Yii::$app->security->generateRandomString();
+            $data = array();
+            $data['FirstName'] = $model->FirstName;
+            $data['Email'] = $user->Email;
+            $subject = 'Registration Confirmation';
+            $data['subject'] = $subject;
+            Utility::confirmRegistration($user->Email, $subject, $data);
+            $model->UserID = $user->ID;
+            $model->CreatedAt = $date;
+            $model->save(false);
+            $user->Status = 2;
+            $user->save(false);
+            $response = "Success!";
+            return $this->redirect('success');
         }
 
-        return $this->render('confirm', compact('user'));
+        return $this->render('register', compact('model'));
     }
 
     /**
@@ -182,8 +217,8 @@ class SiteController extends Controller
         return $this->render('about');
     }
 
-    public function actionPolicy()
+    public function actionSuccess()
     {
-        return $this->render('policy');
+        return $this->render('success');
     }
 }
