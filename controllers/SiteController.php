@@ -87,6 +87,7 @@ class SiteController extends Controller
                 $data['subject'] = $subject;
                 $data['Token'] = $token;
                 Utility::confirmEmail($model->Email, $subject, $data);
+                $model->Token = $token;
                 $model->Status = 0;
                 $model->CreatedAt = $date;
                 $model->save(false);
