@@ -12,11 +12,11 @@ $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="profile-index">
 
-    <h1><?= Html::encode($this->title) ?></h1>
-    <?php // echo $this->render('_search', ['model' => $searchModel]); ?>
+    <h1><?= "Registered users" ?></h1>
+    
 
     <p>
-        <?php//= Html::a('Create Profile', ['create'], ['class' => 'btn btn-success']) ?>
+        
     </p>
 <?php Pjax::begin(); ?>    <?= GridView::widget([
         'dataProvider' => $dataProvider,
@@ -24,12 +24,10 @@ $this->params['breadcrumbs'][] = $this->title;
         'columns' => [
             ['class' => 'yii\grid\SerialColumn'],
 
-            'ID',
-            'UserID',
             'FirstName',
             'LastName',
             //'MiddleName',
-            // 'Gender',
+            'Gender',
             // 'Address:ntext',
             // 'State',
             // 'City',
@@ -38,7 +36,7 @@ $this->params['breadcrumbs'][] = $this->title;
             // 'DateOfBirth',
             // 'MeansOfIdentification',
             // 'IdentificationNumber',
-            // 'CreatedAt',
+            'CreatedAt',
             // 'UpdatedAt',
 
             ['class' => 'yii\grid\ActionColumn'],
