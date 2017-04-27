@@ -77,11 +77,7 @@ class SiteController extends Controller
         $model = new User();
         $response = '';
         if ($model->load(Yii::$app->request->post()) && $model->validate()) {
-            $u = User::find()->where(['Email' => $model->Email])->count();
-            if($u > 0)  {
-                $response = 'used';
-                return false;
-            } else {
+
                 $date = date('Y-m-d H:i:s');
                 $token = \Yii::$app->security->generateRandomString();
                 $data = array();
@@ -96,7 +92,7 @@ class SiteController extends Controller
                 $model->save(false);
                 //return $this->goBack();
                 $response = "Success!";
-            }
+           
         }
 
         return $this->render('index', compact('model', 'response'));

@@ -40,7 +40,7 @@ class User extends ActiveRecord implements IdentityInterface
         return [
             [['FirstName', 'Email'], 'required'],
             [['Email'], 'email'],
-            [['Email'], 'validateEmail'],
+            //[['Email'], 'validateEmail'],
             [['Email'], 'unique'],
             [['Token', 'Status', 'CreatedAt', 'UpdatedAt'], 'safe'],            
         ];
